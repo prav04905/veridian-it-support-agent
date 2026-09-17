@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Veridian IT Support Agent</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f4f8;
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .chat-container {
+            background: white;
+            width: 600px;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px #ccc;
+        }
+
+        h1 {
+            text-align: center;
+            color: #263b80;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 12px;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            resize: none;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #263b80;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #18285d;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f3ff;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="chat-container">
+
+    <h1>🤖 Veridian IT Support</h1>
+
+    <p class="subtitle">
+        Internal Service Agent | Ask your IT questions
+    </p>
+
+    <textarea
+        id="message"
+        placeholder="Example: I forgot my password..."
+    ></textarea>
+
+    <button onclick="askAgent()">Ask Support</button>
+
+    <button onclick="routeTicket()">Route Ticket</button>
+
+    <div id="result">
+        Your response will appear here...
+    </div>
+
+</div>
+
+<script>
+
+async function askAgent() {
+
+    const message = document.getElementById("message").value;
+    const result = document.getElementById("result");
+
+    if (!message.trim()) {
+        result.textContent = "Please enter your question.";
+        return;
+    }
+
+    result.textContent = "Processing your request...";
+
+    try {
+        const response = await fetch("/ask", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: message
+            })
+        });
+
+        const data = await response.json();
+
+        result.textContent =
+            "Category: " + data.category +
+            "\n\nResponse: " + data.response +
+            "\n\nRecommended Action: " + data.recommended_action;
+
+    } catch (error) {
+        result.textContent = "Error connecting to the support agent.";
+    }
+}
+
+
+async function routeTicket() {
+
+    const message = document.getElementById("message").value;
+    const result = document.getElementById("result");
+
+    if (!message.trim()) {
+        result.textContent = "Please enter your ticket details.";
+        return;
+    }
+
+    result.textContent = "Routing your ticket...";
+
+    try {
+        const response = await fetch("/route-ticket", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: message
+            })
+        });
+
+        const data = await response.json();
+
+        result.textContent =
+            "Ticket Routing Result:\n\n" +
+            "Assigned Team: " + data.assigned_team +
+            "\n\nReason: " + data.reason;
+
+    } catch (error) {
+        result.textContent = "Error routing the ticket.";
+    }
+}
+
+</script>
+
+</body>
+</html>
